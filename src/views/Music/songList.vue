@@ -33,7 +33,7 @@
           </div>
         </div>
         <div class="playAllBottom">
-          <div class="playClick">
+          <div class="playClick" @click="pushCollect">
             <i class="playIcon fa fa-play-circle-o"></i>
             <span>播放全部</span>
             <span class="playNum">{{'(共'+songInformation.songListCount+'首)'}}</span>
@@ -51,8 +51,7 @@
           <div class="serialNum">{{index + 1}}</div>
           <div class="musicLi">
             <div class="musicContent">
-              <!--神奇的报错-->
-              <span class="musicName">{{isCreated ?item.name :'name'}}</span>
+              <span :class="!audioSrc ?'' :item.id==audioSrc.id ?'playActive' :''"  class="musicName">{{isCreated ?item.name :'name'}}</span>
               <span class="framer">{{isCreated ?item.singer :'singer'}}</span>
             </div>
             <div class="musicSet">
@@ -82,15 +81,15 @@ export default {
         songListPic:
           "https://p2.music.126.net/35D0Fpa2PYtfBlf1FKRUfA==/109951163865669289.jpg?param=400y400",
         songListPlayCount: 364987,
-        songListUserId: 320509339,
-        songs: Array(100)
+        songListUserId: 320509339
       },
       isCreated: false
     };
   },
   computed: {
     ...mapState({
-      audioSrc: "audioSrc"
+      audioSrc: "audioSrc",
+      audioSrcArr: "audioSrcArr"
     })
   },
   created() {
@@ -115,9 +114,12 @@ export default {
     songGo() {
       this.$router.go(-1);
     },
-    songsClick(item, index) {
+    songsClick(item) {
       this.$store.commit("songsClick", item);
-      console.log(this.audioSrc);
+    },
+    pushCollect() {
+      this.$store.commit("audioSrcArrPush", this.songInformation.songs);
+      console.log(this.audioSrcArr)
     }
   }
 };
@@ -330,6 +332,10 @@ export default {
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
+      }
+
+      & .playActive{
+        color: $bc;
       }
 
       & .framer {

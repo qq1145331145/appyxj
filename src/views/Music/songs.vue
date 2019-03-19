@@ -8,7 +8,7 @@
         <span>歌单</span>
       </div>
     </div>
-    <div class="bodyBox">
+    <div class="bodyBox" @scroll="scrollNext" ref="bodyBox">
       <div class="bodyTitle">
         <div class="imgUrlBox">
           <img :src="musicData[0].coverImgUrl">
@@ -20,15 +20,15 @@
         </div>
       </div>
       <div class="bodySongBox">
-        <router-link tag="div"  @click.native="songSelectClick(item,index)" :to="{path:$route.path+'/'+item.id,query:{id:item.id}}" class="songSelect" v-for="(item,index) in musicShow" :key="'ms'+index">
+        <router-link tag="div"  @click.native="songSelectClick(item,index)" :to="{path:$route.path+'/'+item.id,query:{id:item.id}}" class="songSelect" ref="songSelect" v-for="(item,index) in musicShow" :key="'ms'+index">
           <div class="songImg">
             <img :src="item.coverImgUrl">
             <div class="creatorBox"><i class="fa fa-user"></i> {{item.creator}}</div>
           </div>
           <span>{{item.title}}</span>
         </router-link>
-        <div class="placeholderBox"></div>
       </div>
+        <div class="placeholderBox" ref="placeholderBox"></div>
     </div>
     <router-view></router-view>
   </div>
@@ -48,7 +48,8 @@ export default {
           description: "这是一张以夜晚为主题的日语民谣歌单。"
         }
       ],
-      musicShow: null
+      musicShow: null,
+      showSplice:11
     };
   },
   props: ["name"],
@@ -67,8 +68,8 @@ export default {
             this.musicData.push(element);
           });
           this.musicData.splice(0, 1);
-          this.musicShow = this.musicData.slice(1, 11);
-          // console.log(this.musicData);
+          this.musicShow = this.musicData.slice(1, this.showSplice);
+          console.log(this.musicData);
         },
         err => {
           alert(err);
@@ -82,12 +83,17 @@ export default {
             this.musicData.push(element);
           });
           this.musicData.splice(0, 1);
-          this.musicShow = this.musicData.slice(1, 11);
+          this.musicShow = this.musicData.slice(1, this.showSplice);
         },
         err => {
           alert(err);
         }
       );
+    }
+  },
+  watch:{
+    showSplice(){
+      this.musicShow = this.musicData.slice(1, this.showSplice);
     }
   },
   methods: {
@@ -96,6 +102,19 @@ export default {
     },
     songSelectClick(item,index){
       console.log(item)
+    },
+    scrollNext(){
+      // console.log(this.$refs.placeholderBox.getBoundingClientRect().y)
+      // console.log(getComputedStyle(this.$refs.placeholderBox).height)
+      // console.log(document.body.clientHeight)
+
+      let placeholderBoxY = this.$refs.placeholderBox.getBoundingClientRect().y;
+      // let placeholderBoxHeight = parseInt(getComputedStyle(this.$refs.placeholderBox).height)
+      let bodyHeight = document.body.clientHeight;
+      if(placeholderBoxY <= bodyHeight){
+        this.showSplice+=10
+        console.log('1')
+      }
     }
   }
 };

@@ -25,10 +25,10 @@
       </div>
       <!-- 固定底部框 -->
       <div class="footBox">
-        <div class="musicImg">
+        <div class="musicImg" @click="audioShow">
           <img :src="this.musicPic">
         </div>
-        <div class="musicConten">
+        <div class="musicConten" @click="audioShow">
           <span class="song">{{this.musicName}}</span>
           <span class="singer">{{this.musicSinger}}</span>
         </div>
@@ -36,29 +36,43 @@
           :class="['musicPlay' ,'fa', isPaused ?'fa-play-circle-o' :'fa-pause-circle-o' ]"
           @click="isPausedClick"
         ></div>
-        <div class="musicMenu fa fa-indent"></div>
+        <div class="musicMenu fa fa-indent" @click="collectShow"></div>
       </div>
     </div>
     <!-- 播放层组件 -->
-    <audioPlay v-show="false"></audioPlay>
-    <audio ref="audio" :src="isPlay ?audioSrc.url :null" autoplay>你的浏览器不支持audio</audio>
+    <audioPlay
+      ref="audioPlay"
+      v-show="audioPlayShow"
+      :musicName="musicName"
+      :musicSinger="musicSinger"
+      :musicPic="musicPic"
+    ></audioPlay>
+    <!-- 音乐列表层 -->
+    <collectBox v-show="collectBoxShow"></collectBox>
   </div>
 </template>
 <script>
 import { mapState } from "vuex";
 import audioPlay from "./components/audioPlay";
-// const url ="https://api.bzqll.com/music/netease/songList?key=579621905&id=3778678&limit=200&offset=0";
+import collectBox from "./components/collectBox"
+
+// const url ="/API/recommend/resource";
 
 export default {
   name: "app",
   components: {
-    audioPlay
+    audioPlay,
+    collectBox
+
   },
   computed: {
     ...mapState({
       audioSrc: "audioSrc",
       isPlay: "isPlay",
-      isPaused: "isPaused"
+      isPaused: "isPaused",
+      audioPlayShow: "audioPlayShow",
+      collectBoxShow:'collectBoxShow'
+
     }),
     musicName() {
       if (this.audioSrc) {
@@ -78,24 +92,20 @@ export default {
       if (this.audioSrc) {
         return this.audioSrc.pic;
       } else {
-        return;
+        return "http://p1.music.126.net/XnVjKN4-Isoo-pYFz2qFvw==/16658700673109477.jpg?param=400y400";
       }
     }
   },
   methods: {
     isPausedClick() {
-      if (this.isPlay) {
-        if (this.isPaused == false) {
-          this.$refs.audio.pause();
-          console.log("暂停");
-        } else if (this.isPaused == true) {
-          this.$refs.audio.play();
-          console.log("播放");
-        }
-        this.$store.commit("isPausedClick");
-        // console.log(this.isPaused)
-        // console.log(this.$refs.audio)
-      }
+      this.$refs.audioPlay.isPausedClick();
+    },
+    audioShow() {
+      this.$store.commit("audioPlayShow");
+    },
+
+    collectShow(){
+      this.$store.commit("collectBoxShow");
     }
   }
   // created() {

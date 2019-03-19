@@ -5,13 +5,17 @@ module.exports = {
         devServer: {
             proxy: {
                 "/api": {
-                    target: "https://api.zhuishushenqi.com",
-                    pathRewrite: {"^/api": ""},
+                    target: "https://api.bzqll.com",
+                    pathRewrite: {
+                        "^/api": ""
+                    },
                     changeOrigin: true
                 },
                 "/API": {
                     target: "http://localhost:3000",
-                    pathRewrite: {"^/API": ""},
+                    pathRewrite: {
+                        "^/API": ""
+                    },
                     changeOrigin: true
                 }
 
